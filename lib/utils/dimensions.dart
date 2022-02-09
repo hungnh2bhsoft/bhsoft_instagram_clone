@@ -1,0 +1,1 @@
+const kMobileMaxWidth = 600;
