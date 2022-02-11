@@ -24,7 +24,8 @@ class AuthMethods {
           username.isNotEmpty) {
         final cred = await _auth.createUserWithEmailAndPassword(
             email: email, password: password);
-        log(cred.toString());
+        log(cred.toString(), name: "FirebaseAuth");
+        firebase_auth.User currentUser = _auth.currentUser!;
         final imageUrl = file == null
             ? ""
             : await StorageMethod().uploadImageToStorage(
@@ -32,7 +33,6 @@ class AuthMethods {
                 file,
                 isPost: true,
               );
-        log(imageUrl);
         await _firestore.collection("users").doc(cred.user!.uid).set({
           "username": username,
           "email": email,
@@ -75,6 +75,14 @@ class AuthMethods {
     } on firebase_auth.FirebaseAuthException catch (_) {
       throw LogOutFailure;
     }
+  }
+
+  Future<User> getUserDetails() async {
+    final firebase_auth.User currentUser = _auth.currentUser!;
+    final snapshot =
+        await _firestore.collection("users").doc(currentUser.uid).get();
+    log(snapshot.data().toString(), name: "Firestore user data");
+    return User.fromSnapshot(snapshot);
   }
 }
 
