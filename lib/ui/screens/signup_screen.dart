@@ -17,10 +17,54 @@ class SignupScreen extends StatefulWidget {
 
 class _SignupScreenState extends State<SignupScreen> {
   Uint8List? _image;
+
+  bool isLoading = false;
+
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _bioController = TextEditingController();
+
+  void _showLoginScreen(BuildContext context) {
+    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) {
+      return const LoginScreen();
+    }));
+  }
+
+  void _signUp(BuildContext context) async {
+    try {
+      await AuthMethods().signUpUser(
+        email: _emailController.text,
+        password: _passwordController.text,
+        bio: _bioController.text,
+        username: _usernameController.text,
+        file: _image,
+      );
+      // Navigator.of(context)
+      //     .pushReplacement(MaterialPageRoute(builder: (context) {
+      //   return HomeScreen();
+      // }));
+    } on SignUpWithEmailAndPasswordFailure catch (e) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            backgroundColor: kSecondaryColor,
+            content: Text(e.message),
+          ),
+        );
+    }
+  }
+
+  void _selectImage() async {
+    final galleryImage = await pickImage();
+    setState(() {
+      if (galleryImage != null) {
+        _image = galleryImage;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,30 +88,7 @@ class _SignupScreenState extends State<SignupScreen> {
               const SizedBox(
                 height: 64,
               ),
-              Stack(
-                children: [
-                  _image != null
-                      ? CircleAvatar(
-                          radius: 64,
-                          backgroundImage: MemoryImage(_image!),
-                          backgroundColor: Colors.red,
-                        )
-                      : const CircleAvatar(
-                          radius: 64,
-                          backgroundImage: NetworkImage(
-                              'https://i.stack.imgur.com/l60Hf.png'),
-                          backgroundColor: Colors.red,
-                        ),
-                  Positioned(
-                    bottom: -10,
-                    left: 80,
-                    child: IconButton(
-                      onPressed: selectImage,
-                      icon: const Icon(Icons.add_a_photo),
-                    ),
-                  )
-                ],
-              ),
+              _buildArvatar(),
               const SizedBox(
                 height: 24,
               ),
@@ -104,26 +125,7 @@ class _SignupScreenState extends State<SignupScreen> {
               const SizedBox(
                 height: 24,
               ),
-              InkWell(
-                onTap: () => AuthMethods().signUpUser(
-                    email: _emailController.text,
-                    password: _passwordController.text,
-                    bio: _bioController.text,
-                    username: _usernameController.text,
-                    file: _image!),
-                child: Container(
-                  child: const Text("Sign up"),
-                  width: double.infinity,
-                  alignment: Alignment.center,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  decoration: const ShapeDecoration(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(4)),
-                    ),
-                    color: kblueColor,
-                  ),
-                ),
-              ),
+              _buildLoginButton(context),
               const SizedBox(
                 height: 12,
               ),
@@ -141,12 +143,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 8),
                   ),
                   GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(builder: (context) {
-                        return LoginScreen();
-                      }));
-                    },
+                    onTap: () => _showLoginScreen(context),
                     child: Container(
                       child: const Text(
                         ' Log in.',
@@ -166,12 +163,50 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 
-  void selectImage() async {
-    final galleryImage = await pickImage();
-    setState(() {
-      if (galleryImage != null) {
-        _image = galleryImage;
-      }
-    });
+  Stack _buildArvatar() {
+    return Stack(
+      children: [
+        _image != null
+            ? CircleAvatar(
+                radius: 64,
+                backgroundImage: MemoryImage(_image!),
+                backgroundColor: Colors.red,
+              )
+            : const CircleAvatar(
+                radius: 64,
+                backgroundImage:
+                    NetworkImage('https://i.stack.imgur.com/l60Hf.png'),
+                backgroundColor: Colors.red,
+              ),
+        Positioned(
+          bottom: -10,
+          left: 80,
+          child: IconButton(
+            onPressed: _selectImage,
+            icon: const Icon(Icons.add_a_photo),
+          ),
+        )
+      ],
+    );
+  }
+
+  InkWell _buildLoginButton(BuildContext context) {
+    return InkWell(
+      onTap: () => _signUp(context),
+      child: Container(
+        child: isLoading
+            ? const CircularProgressIndicator()
+            : const Text('Sign Up'),
+        width: double.infinity,
+        alignment: Alignment.center,
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: const ShapeDecoration(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(4)),
+          ),
+          color: kBlueColor,
+        ),
+      ),
+    );
   }
 }

@@ -51,11 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 height: 24,
               ),
               GestureDetector(
-                onTap: () async {
-                  await AuthMethods().logIn(
-                      email: _emailController.text,
-                      password: _passwordController.text);
-                },
+                onTap: () => _logIn(context),
                 child: Container(
                   child: const Text(
                     'Log in',
@@ -67,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(4)),
                     ),
-                    color: kblueColor,
+                    color: kBlueColor,
                   ),
                 ),
               ),
@@ -81,11 +77,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     'Dont have an account?',
                   ),
                   GestureDetector(
-                    onTap: () => Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(
-                        builder: (context) => const SignupScreen(),
-                      ),
-                    ),
+                    onTap: () => _showSignupScreen(context),
                     child: const Text(
                       ' Sign Up.',
                       style: TextStyle(
@@ -100,5 +92,32 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       )),
     );
+  }
+
+  void _showSignupScreen(BuildContext context) {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => const SignupScreen(),
+      ),
+    );
+  }
+
+  void _logIn(BuildContext context) async {
+    try {
+      await AuthMethods().logIn(
+          email: _emailController.text, password: _passwordController.text);
+      // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) {
+      //   return HomeScreen();
+      // }));
+    } on LogInWithEmailAndPasswordFailure catch (e) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: Text(e.message),
+            backgroundColor: kSecondaryColor,
+          ),
+        );
+    }
   }
 }

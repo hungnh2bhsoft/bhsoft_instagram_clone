@@ -1,8 +1,13 @@
 import 'package:bhsoft_instagram_clone/firebase_options.dart';
+import 'package:bhsoft_instagram_clone/responsive/mobile_screen_layout.dart';
+import 'package:bhsoft_instagram_clone/responsive/responsive_layout.dart';
+import 'package:bhsoft_instagram_clone/responsive/web_screen_layout.dart';
 import 'package:bhsoft_instagram_clone/ui/screens/screens.dart';
 import 'package:bhsoft_instagram_clone/utils/colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,8 +23,27 @@ class InstagramApp extends StatelessWidget {
     return MaterialApp(
       title: "Instagram Clone",
       theme: ThemeData.dark()
-          .copyWith(scaffoldBackgroundColor: kmobileBackgroundColor),
-      home: LoginScreen(),
+          .copyWith(scaffoldBackgroundColor: kMobileBackgroundColor),
+      home: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.userChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.active) {
+            if (snapshot.hasData) {
+              return ResponsiveLayout(
+                mobileScreenLayout: MobileScreenLayout(),
+                webScreenLayout: WebScreenLayout(),
+              );
+            }
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
+          return LoginScreen();
+        },
+      ),
     );
   }
 }
