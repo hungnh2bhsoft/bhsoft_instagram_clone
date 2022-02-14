@@ -1,6 +1,6 @@
 import 'package:bhsoft_instagram_clone/providers/user_provider.dart';
 import 'package:bhsoft_instagram_clone/resources/auth_methods.dart';
-import 'package:bhsoft_instagram_clone/utils/dimensions.dart';
+import 'package:bhsoft_instagram_clone/utils/global_variables.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
