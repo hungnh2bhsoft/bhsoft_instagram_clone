@@ -108,7 +108,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                         child: Container(
                           decoration: BoxDecoration(
                             image: DecorationImage(
-                              image: AssetImage("assets/sample_avatar.jpg"),
+                              image: MemoryImage(_file!),
                               fit: BoxFit.cover,
                             ),
                           ),
