@@ -48,7 +48,7 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
         backgroundColor: kMobileBackgroundColor,
         currentIndex: _currentIndex,
         onTap: selectPage,
-        items: [
+        items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: "",
@@ -66,6 +66,11 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.favorite),
+            label: "",
+            backgroundColor: kprimaryColor,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
             label: "",
             backgroundColor: kprimaryColor,
           ),

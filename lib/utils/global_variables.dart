@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 const kMobileMaxWidth = 600;
 
 const homePageItems = [
+  Text("Home Screen"),
+  Text("Update Screen"),
   AddPostScreen(),
-  Text("Search Screen"),
-  Text("Add Post Screen"),
   Text("Favorite Scren"),
+  Text("Followers Screen"),
+  Text("Profile Screen"),
 ];
