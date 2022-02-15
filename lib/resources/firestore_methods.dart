@@ -23,6 +23,7 @@ class FirestoreMethods {
           profImage: profileImage,
           uid: uid,
           likes: [],
+          comments: [],
           datePublished: DateTime.now(),
           postUrl: photoUrl,
           postId: const Uuid().v4());
@@ -32,6 +33,25 @@ class FirestoreMethods {
     } on FirebaseException catch (e) {
       throw UploadPostFailure(message: e.message!);
     }
+  }
+
+  Future<void> likePost(List likes, String postId, String uid) async {
+    if (likes.contains(uid)) {
+      await _firestore.collection("posts").doc(postId).update({
+        'likes': FieldValue.arrayRemove([uid])
+      });
+    } else {
+      await _firestore.collection("posts").doc(postId).update({
+        'likes': FieldValue.arrayUnion([uid])
+      });
+    }
+  }
+
+  Future<String> getUserProfileImage(String uid) async {
+    final snapshot = await _firestore.collection("users").doc(uid).get();
+    final data = snapshot.data();
+    final imageUrl = data!["imageUrl"] as String;
+    return imageUrl;
   }
 }
 

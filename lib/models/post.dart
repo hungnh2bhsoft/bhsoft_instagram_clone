@@ -5,6 +5,7 @@ class Post {
   final String uid;
   final String username;
   final likes;
+  final comments;
   final String postId;
   final DateTime datePublished;
   final String postUrl;
@@ -15,6 +16,7 @@ class Post {
     required this.uid,
     required this.username,
     required this.likes,
+    required this.comments,
     required this.postId,
     required this.datePublished,
     required this.postUrl,
@@ -28,6 +30,7 @@ class Post {
         description: snapshot["description"],
         uid: snapshot["uid"],
         likes: snapshot["likes"],
+        comments: snapshot["comments"],
         postId: snapshot["postId"],
         datePublished: snapshot["datePublished"],
         username: snapshot["username"],
