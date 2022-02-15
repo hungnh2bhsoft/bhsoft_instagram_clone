@@ -24,7 +24,7 @@ class AuthMethods {
           username.isNotEmpty) {
         final cred = await _auth.createUserWithEmailAndPassword(
             email: email, password: password);
-        log(cred.toString(), name: "FirebaseAuth");
+        // log(cred.toString(), name: "FirebaseAuth");
         firebase_auth.User currentUser = _auth.currentUser!;
         final imageUrl = file == null
             ? "https://www.google.com/url?sa=i&url=https%3A%2F%2Fviraland.vn%2Ftuyen-dung%2F&psig=AOvVaw2btNFrk3BJ1wiQvtnT5Ss-&ust=1644979231184000&source=images&cd=vfe&ved=0CAsQjRxqFwoTCMi1wqnXgPYCFQAAAAAdAAAAABAD"
@@ -81,7 +81,7 @@ class AuthMethods {
     final firebase_auth.User currentUser = _auth.currentUser!;
     final snapshot =
         await _firestore.collection("users").doc(currentUser.uid).get();
-    log(snapshot.data().toString(), name: "Firestore user data");
+    // log(snapshot.data().toString(), name: "Firestore user data");
     return User.fromSnapshot(snapshot);
   }
 }

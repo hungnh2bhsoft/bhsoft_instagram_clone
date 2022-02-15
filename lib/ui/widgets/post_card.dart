@@ -1,6 +1,8 @@
 import 'dart:developer';
 
+import 'package:bhsoft_instagram_clone/models/models.dart';
 import 'package:bhsoft_instagram_clone/resources/firestore_methods.dart';
+import 'package:bhsoft_instagram_clone/ui/screens/comments_screen.dart';
 import 'package:bhsoft_instagram_clone/ui/widgets/like_animation.dart';
 import 'package:bhsoft_instagram_clone/utils/colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -141,7 +143,9 @@ class _PostCardState extends State<PostCard> {
               ),
               IconButton(
                 onPressed: () {
-                  // TODO: Handle togglig comment
+                  Navigator.of(context).push(MaterialPageRoute(builder: (_) {
+                    return CommentScreen(post: Post.fromJson(widget.data));
+                  }));
                 },
                 icon: const Icon(Icons.comment_outlined),
               ),
@@ -170,7 +174,7 @@ class _PostCardState extends State<PostCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "${widget.data["likes"].length} likes",
+                  "${widget.data["likes"].length} like${widget.data["likes"].length <= 1 ? "" : "s"}",
                   style: Theme.of(context).textTheme.bodyText2,
                   textAlign: TextAlign.start,
                 ),
