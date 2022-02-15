@@ -148,7 +148,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                   children: [
                     CircleAvatar(
                       backgroundImage: NetworkImage(user!.imageUrl == ""
-                          ? "https://therminic2018.eu/wp-content/uploads/2018/07/dummy-avatar-300x300.jpg"
+                          ? "https://www.google.com/url?sa=i&url=https%3A%2F%2Fviraland.vn%2Ftuyen-dung%2F&psig=AOvVaw2btNFrk3BJ1wiQvtnT5Ss-&ust=1644979231184000&source=images&cd=vfe&ved=0CAsQjRxqFwoTCMi1wqnXgPYCFQAAAAAdAAAAABAD"
                           : user.imageUrl),
                     ),
                     SizedBox(
