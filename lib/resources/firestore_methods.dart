@@ -1,7 +1,6 @@
 import 'dart:developer';
 import 'dart:typed_data';
 
-import 'package:bhsoft_instagram_clone/models/comment.dart';
 import 'package:bhsoft_instagram_clone/models/models.dart';
 import 'package:bhsoft_instagram_clone/resources/storage_methods.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -112,6 +111,18 @@ class FirestoreMethods {
         .snapshots()
         .map((snapshot) =>
             snapshot.docs.map((doc) => Comment.fromSnapshot(doc)).toList());
+  }
+
+  Future<void> deletePost(
+    String uid,
+    String postId,
+  ) async {
+    try {
+      log("deleting post: $postId by $uid");
+      await _firestore.collection("posts").doc(postId).delete();
+    } on Exception catch (e) {
+      log(e.toString());
+    }
   }
 }
 

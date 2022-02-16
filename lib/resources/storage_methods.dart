@@ -30,4 +30,8 @@ class StorageMethod {
       return "";
     }
   }
+
+  Future<void> deleteImage(String ref, String childName) async {
+    await _firebaseStorage.ref(ref).child(childName).delete();
+  }
 }
