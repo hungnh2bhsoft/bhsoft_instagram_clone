@@ -124,6 +124,16 @@ class FirestoreMethods {
       log(e.toString());
     }
   }
+
+  Future<List<User>> searchUsers(String value) async {
+    final snapshot = await _firestore
+        .collection("users")
+        .where("username", isGreaterThanOrEqualTo: value)
+        .limit(10)
+        .get();
+    final results = snapshot.docs.map((e) => User.fromSnapshot(e)).toList();
+    return results;
+  }
 }
 
 class UploadPostFailure implements Exception {

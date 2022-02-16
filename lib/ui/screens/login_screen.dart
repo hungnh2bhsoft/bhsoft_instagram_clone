@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bhsoft_instagram_clone/resources/auth_methods.dart';
 import 'package:bhsoft_instagram_clone/ui/screens/screens.dart';
 import 'package:bhsoft_instagram_clone/ui/widgets/widgets.dart';
@@ -6,10 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  LoginScreen({Key? key}) : super(key: key);
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
@@ -106,9 +108,7 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       await AuthMethods().logIn(
           email: _emailController.text, password: _passwordController.text);
-      // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) {
-      //   return HomeScreen();
-      // }));
+      log("Logged in");
     } on LogInWithEmailAndPasswordFailure catch (e) {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
