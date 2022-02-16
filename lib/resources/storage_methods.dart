@@ -14,7 +14,7 @@ class StorageMethod {
     required bool isPost,
   }) async {
     try {
-      log(_firebaseAuth.currentUser!.uid, name: "Storage");
+      // log(_firebaseAuth.currentUser!.uid, name: "Storage");
       Reference ref =
           _firebaseStorage.ref(childName).child(_firebaseAuth.currentUser!.uid);
 
@@ -26,8 +26,12 @@ class StorageMethod {
       final snap = await uploadTask;
       return await snap.ref.getDownloadURL();
     } on FirebaseException catch (e) {
-      log(e.message!, name: "Storage");
+      // log(e.message!, name: "Storage");
       return "";
     }
+  }
+
+  Future<void> deleteImage(String ref, String childName) async {
+    await _firebaseStorage.ref(ref).child(childName).delete();
   }
 }

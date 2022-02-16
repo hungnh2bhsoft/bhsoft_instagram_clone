@@ -1,6 +1,8 @@
 import 'dart:developer';
 
+import 'package:bhsoft_instagram_clone/models/models.dart';
 import 'package:bhsoft_instagram_clone/resources/firestore_methods.dart';
+import 'package:bhsoft_instagram_clone/ui/screens/comments_screen.dart';
 import 'package:bhsoft_instagram_clone/ui/widgets/like_animation.dart';
 import 'package:bhsoft_instagram_clone/utils/colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -81,22 +83,25 @@ class _PostCardState extends State<PostCard> {
                     showDialog(
                       context: context,
                       builder: (context) {
+                        final uid = FirebaseAuth.instance.currentUser!.uid;
                         return Dialog(
                           child: ListView(
                             shrinkWrap: true,
-                            children: ["Delete"]
-                                .map(
-                                  (e) => InkWell(
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        vertical: 12,
-                                        horizontal: 16,
-                                      ),
-                                      child: Text(e),
-                                    ),
-                                  ),
+                            children: [
+                              if (uid == widget.data["uid"])
+                                SimpleDialogOption(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 16.0, horizontal: 12.0),
+                                  child: const Text("Delete"),
+                                  onPressed: () {
+                                    FirestoreMethods().deletePost(
+                                      widget.data["uid"],
+                                      widget.data["postId"],
+                                    );
+                                    Navigator.of(context).pop();
+                                  },
                                 )
-                                .toList(),
+                            ],
                           ),
                         );
                       },
@@ -141,7 +146,9 @@ class _PostCardState extends State<PostCard> {
               ),
               IconButton(
                 onPressed: () {
-                  // TODO: Handle togglig comment
+                  Navigator.of(context).push(MaterialPageRoute(builder: (_) {
+                    return CommentScreen(post: Post.fromJson(widget.data));
+                  }));
                 },
                 icon: const Icon(Icons.comment_outlined),
               ),
@@ -158,8 +165,6 @@ class _PostCardState extends State<PostCard> {
               ),
             ],
           ),
-
-          // Description and comments
           Container(
             padding: const EdgeInsets.symmetric(
               horizontal: 16,
@@ -170,7 +175,7 @@ class _PostCardState extends State<PostCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "${widget.data["likes"].length} likes",
+                  "${widget.data["likes"].length} like${widget.data["likes"].length <= 1 ? "" : "s"}",
                   style: Theme.of(context).textTheme.bodyText2,
                   textAlign: TextAlign.start,
                 ),
@@ -209,7 +214,7 @@ class _PostCardState extends State<PostCard> {
                   child: Container(
                     padding: const EdgeInsets.only(top: 4),
                     child: Text(
-                      "View all${(widget.data["comments"] as List).isNotEmpty ? " " + widget.data["comments"].length : ""} comments",
+                      "View all comments",
                       style: const TextStyle(
                         fontSize: 16,
                         color: kBlueColor,

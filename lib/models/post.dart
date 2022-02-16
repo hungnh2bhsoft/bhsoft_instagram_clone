@@ -32,10 +32,24 @@ class Post {
         likes: snapshot["likes"],
         comments: snapshot["comments"],
         postId: snapshot["postId"],
-        datePublished: snapshot["datePublished"],
+        datePublished: (snapshot["datePublished"] as Timestamp).toDate(),
         username: snapshot["username"],
         postUrl: snapshot['postUrl'],
         profImage: snapshot['profImage']);
+  }
+
+  factory Post.fromJson(Map<String, dynamic> json) {
+    return Post(
+      description: json['description'],
+      uid: json['uid'],
+      likes: json['likes'],
+      comments: json['comments'],
+      postId: json['postId'],
+      datePublished: (json['datePublished'] as Timestamp).toDate(),
+      username: json['username'],
+      postUrl: json['postUrl'],
+      profImage: json['profImage'],
+    );
   }
 
   Map<String, dynamic> toJson() => {

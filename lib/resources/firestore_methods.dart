@@ -29,7 +29,7 @@ class FirestoreMethods {
           postId: const Uuid().v4());
 
       await _firestore.collection("posts").doc(post.postId).set(post.toJson());
-      log("Uploaded post: $post");
+      // log("Uploaded post: $post");
     } on FirebaseException catch (e) {
       throw UploadPostFailure(message: e.message!);
     }
@@ -47,11 +47,82 @@ class FirestoreMethods {
     }
   }
 
+  Future<void> toggleLikeComment(
+      List likes, String postId, String commentId, String uid) async {
+    if (likes.contains(uid)) {
+      await _firestore
+          .collection("posts")
+          .doc(postId)
+          .collection("comments")
+          .doc(commentId)
+          .update({
+        'likes': FieldValue.arrayRemove([uid])
+      });
+    } else {
+      await _firestore
+          .collection("posts")
+          .doc(postId)
+          .collection("comments")
+          .doc(commentId)
+          .update({
+        'likes': FieldValue.arrayUnion([uid])
+      });
+    }
+  }
+
   Future<String> getUserProfileImage(String uid) async {
     final snapshot = await _firestore.collection("users").doc(uid).get();
     final data = snapshot.data();
     final imageUrl = data!["imageUrl"] as String;
     return imageUrl;
+  }
+
+  Future<void> postComment(String postId, String content, String uid,
+      String name, String profileImage) async {
+    try {
+      final commentId = const Uuid().v4();
+      if (content.isNotEmpty) {
+        _firestore
+            .collection("posts")
+            .doc(postId)
+            .collection("comments")
+            .doc(commentId)
+            .set({
+          "content": content,
+          "profileImage": profileImage,
+          "name": name,
+          "uid": uid,
+          "likes": [],
+          "datePublished": DateTime.now(),
+        });
+      }
+      log("Posted comment: $content");
+    } catch (e) {
+      log(e.toString(), name: "FirebaseMethods");
+    }
+  }
+
+  Stream<List<Comment>> getPostComments(String postId) {
+    return _firestore
+        .collection("posts")
+        .doc(postId)
+        .collection("comments")
+        .orderBy("datePublished", descending: true)
+        .snapshots()
+        .map((snapshot) =>
+            snapshot.docs.map((doc) => Comment.fromSnapshot(doc)).toList());
+  }
+
+  Future<void> deletePost(
+    String uid,
+    String postId,
+  ) async {
+    try {
+      log("deleting post: $postId by $uid");
+      await _firestore.collection("posts").doc(postId).delete();
+    } on Exception catch (e) {
+      log(e.toString());
+    }
   }
 }
 
