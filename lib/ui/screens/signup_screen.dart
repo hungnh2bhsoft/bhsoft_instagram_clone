@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:bhsoft_instagram_clone/resources/auth_methods.dart';
@@ -28,7 +29,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
   void _showLoginScreen(BuildContext context) {
     Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) {
-      return const LoginScreen();
+      return LoginScreen();
     }));
   }
 
@@ -41,10 +42,6 @@ class _SignupScreenState extends State<SignupScreen> {
         username: _usernameController.text,
         file: _image,
       );
-      // Navigator.of(context)
-      //     .pushReplacement(MaterialPageRoute(builder: (context) {
-      //   return HomeScreen();
-      // }));
     } on SignUpWithEmailAndPasswordFailure catch (e) {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
@@ -70,94 +67,88 @@ class _SignupScreenState extends State<SignupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: SafeArea(
+      body: Center(
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 32),
           width: double.infinity,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Flexible(
-                child: Container(),
-                flex: 2,
-              ),
-              SvgPicture.asset(
-                'assets/ic_instagram.svg',
-                color: kprimaryColor,
-                height: 64,
-              ),
-              const SizedBox(
-                height: 64,
-              ),
-              _buildArvatar(),
-              const SizedBox(
-                height: 24,
-              ),
-              TextFieldInput(
-                hintText: 'Your unique username',
-                textInputType: TextInputType.text,
-                textEditingController: _usernameController,
-              ),
-              const SizedBox(
-                height: 24,
-              ),
-              TextFieldInput(
-                hintText: 'Email',
-                textInputType: TextInputType.emailAddress,
-                textEditingController: _emailController,
-              ),
-              const SizedBox(
-                height: 24,
-              ),
-              TextFieldInput(
-                hintText: 'Password',
-                textInputType: TextInputType.text,
-                textEditingController: _passwordController,
-                obscureText: true,
-              ),
-              const SizedBox(
-                height: 24,
-              ),
-              TextFieldInput(
-                hintText: 'bio',
-                textInputType: TextInputType.text,
-                textEditingController: _bioController,
-              ),
-              const SizedBox(
-                height: 24,
-              ),
-              _buildLoginButton(context),
-              const SizedBox(
-                height: 12,
-              ),
-              Flexible(
-                child: Container(),
-                flex: 2,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    child: const Text(
-                      'Already have an account?',
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                  ),
-                  GestureDetector(
-                    onTap: () => _showLoginScreen(context),
-                    child: Container(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SvgPicture.asset(
+                  'assets/ic_instagram.svg',
+                  color: kprimaryColor,
+                  height: 64,
+                ),
+                const SizedBox(
+                  height: 64,
+                ),
+                _buildArvatar(),
+                const SizedBox(
+                  height: 24,
+                ),
+                TextFieldInput(
+                  hintText: 'Your unique username',
+                  textInputType: TextInputType.text,
+                  textEditingController: _usernameController,
+                ),
+                const SizedBox(
+                  height: 24,
+                ),
+                TextFieldInput(
+                  hintText: 'Email',
+                  textInputType: TextInputType.emailAddress,
+                  textEditingController: _emailController,
+                ),
+                const SizedBox(
+                  height: 24,
+                ),
+                TextFieldInput(
+                  hintText: 'Password',
+                  textInputType: TextInputType.text,
+                  textEditingController: _passwordController,
+                  obscureText: true,
+                ),
+                const SizedBox(
+                  height: 24,
+                ),
+                TextFieldInput(
+                  hintText: 'bio',
+                  textInputType: TextInputType.text,
+                  textEditingController: _bioController,
+                ),
+                const SizedBox(
+                  height: 24,
+                ),
+                _buildLoginButton(context),
+                const SizedBox(
+                  height: 12,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
                       child: const Text(
-                        ' Log in.',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
+                        'Already have an account?',
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 8),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                    GestureDetector(
+                      onTap: () => _showLoginScreen(context),
+                      child: Container(
+                        child: const Text(
+                          ' Log in.',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -26,12 +26,13 @@ class AuthMethods {
             email: email, password: password);
         // log(cred.toString(), name: "FirebaseAuth");
         firebase_auth.User currentUser = _auth.currentUser!;
+        log(_auth.currentUser.toString());
         final imageUrl = file == null
-            ? "https://www.google.com/url?sa=i&url=https%3A%2F%2Fviraland.vn%2Ftuyen-dung%2F&psig=AOvVaw2btNFrk3BJ1wiQvtnT5Ss-&ust=1644979231184000&source=images&cd=vfe&ved=0CAsQjRxqFwoTCMi1wqnXgPYCFQAAAAAdAAAAABAD"
+            ? "https://viraland.vn/wp-content/themes/Viraland/assets/images/user_dummy.jpg"
             : await StorageMethod().uploadImageToStorage(
                 "profilePictures",
                 file,
-                isPost: true,
+                isPost: false,
               );
         await _firestore.collection("users").doc(cred.user!.uid).set({
           "username": username,
@@ -63,7 +64,7 @@ class AuthMethods {
     try {
       final cred = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
-      if (cred.user != null) {}
+      log(_auth.currentUser.toString());
     } on firebase_auth.FirebaseAuthException catch (err) {
       throw LogInWithEmailAndPasswordFailure.fromCode(err.code);
     }

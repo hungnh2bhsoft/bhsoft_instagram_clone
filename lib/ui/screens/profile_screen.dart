@@ -1,12 +1,16 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class ProfilePicture extends StatelessWidget {
-  const ProfilePicture({Key? key}) : super(key: key);
+class ProfileScreen extends StatelessWidget {
+  const ProfileScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: const Text("Hello world"),
+    return Center(
+      child: ElevatedButton(
+        onPressed: () => FirebaseAuth.instance.signOut(),
+        child: Text('Sign out'),
+      ),
     );
   }
 }
