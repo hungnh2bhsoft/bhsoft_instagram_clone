@@ -35,7 +35,6 @@ class _SignupScreenState extends State<SignupScreen> {
 
   void _signUp(BuildContext context) async {
     try {
-      log("signing up");
       await AuthMethods().signUpUser(
         email: _emailController.text,
         password: _passwordController.text,
@@ -68,18 +67,14 @@ class _SignupScreenState extends State<SignupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 32),
-            width: double.infinity,
+      body: Center(
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 32),
+          width: double.infinity,
+          child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Flexible(
-                  child: Container(),
-                  flex: 2,
-                ),
                 SvgPicture.asset(
                   'assets/ic_instagram.svg',
                   color: kprimaryColor,
@@ -128,10 +123,6 @@ class _SignupScreenState extends State<SignupScreen> {
                 _buildLoginButton(context),
                 const SizedBox(
                   height: 12,
-                ),
-                Flexible(
-                  child: Container(),
-                  flex: 2,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,

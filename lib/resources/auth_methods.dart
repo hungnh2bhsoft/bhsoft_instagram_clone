@@ -28,7 +28,7 @@ class AuthMethods {
         firebase_auth.User currentUser = _auth.currentUser!;
         log(_auth.currentUser.toString());
         final imageUrl = file == null
-            ? "https://www.google.com/url?sa=i&url=https%3A%2F%2Fviraland.vn%2Ftuyen-dung%2F&psig=AOvVaw2btNFrk3BJ1wiQvtnT5Ss-&ust=1644979231184000&source=images&cd=vfe&ved=0CAsQjRxqFwoTCMi1wqnXgPYCFQAAAAAdAAAAABAD"
+            ? "https://viraland.vn/wp-content/themes/Viraland/assets/images/user_dummy.jpg"
             : await StorageMethod().uploadImageToStorage(
                 "profilePictures",
                 file,
