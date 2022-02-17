@@ -1,5 +1,6 @@
 import 'package:bhsoft_instagram_clone/models/models.dart';
 import 'package:bhsoft_instagram_clone/resources/firestore_methods.dart';
+import 'package:bhsoft_instagram_clone/ui/screens/screens.dart';
 import 'package:bhsoft_instagram_clone/utils/colors.dart';
 import 'package:flutter/material.dart';
 
@@ -41,7 +42,7 @@ class _SearchScreenState extends State<SearchScreen> {
         backgroundColor: kMobileBackgroundColor,
         title: TextFormField(
           controller: _searchController,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             border: InputBorder.none,
             hintText: "Search for users",
           ),
@@ -73,6 +74,10 @@ class _SearchScreenState extends State<SearchScreen> {
                   return ListView.builder(
                     itemBuilder: (context, index) {
                       return ListTile(
+                        onTap: () => Navigator.of(context)
+                            .push(MaterialPageRoute(builder: (_) {
+                          return ProfileScreen(uid: users[index].uid);
+                        })),
                         leading: CircleAvatar(
                           backgroundImage: NetworkImage(
                             users[index].imageUrl,

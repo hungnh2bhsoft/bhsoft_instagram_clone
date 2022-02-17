@@ -134,6 +134,21 @@ class FirestoreMethods {
     final results = snapshot.docs.map((e) => User.fromSnapshot(e)).toList();
     return results;
   }
+
+  Future<bool> toggleFollowing(String uid, bool isFollowing) async {
+    if (isFollowing) {
+      await _firestore.collection("users").doc(uid).update(
+        {
+          "followers": FieldValue.arrayRemove([uid])
+        },
+      );
+    } else {
+      await _firestore.collection("users").doc(uid).update({
+        "followers": FieldValue.arrayUnion([uid])
+      });
+    }
+    return !isFollowing;
+  }
 }
 
 class UploadPostFailure implements Exception {
