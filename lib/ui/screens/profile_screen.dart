@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:bhsoft_instagram_clone/resources/auth_methods.dart';
+import 'package:bhsoft_instagram_clone/resources/firestore_methods.dart';
 import 'package:bhsoft_instagram_clone/ui/widgets/follow_button.dart';
 import 'package:bhsoft_instagram_clone/utils/colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -17,7 +18,10 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   bool isLoading = true;
+  late bool isFollowing = false;
   late Map<String, dynamic> data;
+  late int followers;
+  late int following;
   late List<dynamic> posts;
 
   @override
@@ -39,6 +43,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     setState(() {
       data = snapshot.data()!;
       posts = postSnapshot.docs.map((e) => e.data()).toList();
+      isFollowing = (data["followers"] as List)
+          .contains(FirebaseAuth.instance.currentUser!.uid);
+      followers = data["followers"]?.length ?? 0;
+      following = data["following"]?.length ?? 0;
       isLoading = false;
     });
   }
@@ -87,19 +95,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
-                                buildStatColumn("Followers",
-                                    (data["followers"] as List).length),
-                                buildStatColumn("Following",
-                                    (data["following"] as List).length),
+                                buildStatColumn("Followers", followers),
+                                buildStatColumn("Following", following),
                                 buildStatColumn("Posts", posts.length),
                               ],
                             ),
-                            FollowButton(
-                              backgroundColor: kMobileBackgroundColor,
-                              borderColor: kprimaryColor,
-                              text: "Edit profile",
-                              textColor: kprimaryColor,
-                            )
+                            widget.uid == FirebaseAuth.instance.currentUser!.uid
+                                ? FollowButton(
+                                    backgroundColor: kMobileBackgroundColor,
+                                    borderColor: kSecondaryColor,
+                                    text: "Sign out",
+                                    textColor: kprimaryColor,
+                                    function: () async =>
+                                        await AuthMethods().logOut(),
+                                  )
+                                : FollowButton(
+                                    backgroundColor: isFollowing
+                                        ? kMobileBackgroundColor
+                                        : kBlueColor,
+                                    borderColor: kSecondaryColor,
+                                    text: isFollowing ? "Unfollow" : "Follow",
+                                    textColor: kprimaryColor,
+                                    function: () async {
+                                      final follow = await FirestoreMethods()
+                                          .toggleFollowing(
+                                              widget.uid, isFollowing);
+                                      setState(() {
+                                        followers += follow ? 1 : -1;
+                                        isFollowing = follow;
+                                      });
+                                    },
+                                  ),
                           ],
                         ),
                       )
@@ -108,8 +134,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child:
-                      Text("This awsome description should be displayed here"),
+                  child: Text(data["bio"] as String),
                 ),
                 Divider(
                   color: kSecondaryColor,
