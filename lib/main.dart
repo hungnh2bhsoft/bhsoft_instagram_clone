@@ -18,9 +18,14 @@ void main() async {
   runApp(InstagramApp());
 }
 
-class InstagramApp extends StatelessWidget {
+class InstagramApp extends StatefulWidget {
   const InstagramApp({Key? key}) : super(key: key);
 
+  @override
+  State<InstagramApp> createState() => _InstagramAppState();
+}
+
+class _InstagramAppState extends State<InstagramApp> {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(

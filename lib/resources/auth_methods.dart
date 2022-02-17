@@ -24,8 +24,6 @@ class AuthMethods {
           username.isNotEmpty) {
         final cred = await _auth.createUserWithEmailAndPassword(
             email: email, password: password);
-        // log(cred.toString(), name: "FirebaseAuth");
-        firebase_auth.User currentUser = _auth.currentUser!;
         log(_auth.currentUser.toString());
         final imageUrl = file == null
             ? "https://viraland.vn/wp-content/themes/Viraland/assets/images/user_dummy.jpg"
