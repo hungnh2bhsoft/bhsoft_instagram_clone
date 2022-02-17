@@ -14,7 +14,7 @@ class MobileScreenLayout extends StatefulWidget {
 }
 
 class _MobileScreenLayoutState extends State<MobileScreenLayout> {
-  int _currentIndex = 0;
+  int _currentIndex = 4;
 
   late final PageController _pageController;
 

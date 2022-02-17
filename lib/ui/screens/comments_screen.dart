@@ -72,14 +72,15 @@ class _CommentScreenState extends State<CommentScreen> {
                 ),
               ),
               IconButton(
-                onPressed: () {
-                  FirestoreMethods().postComment(
+                onPressed: () async {
+                  await FirestoreMethods().postComment(
                     widget.post.postId,
                     _commetController.text,
                     currentUser.uid,
                     currentUser.username,
                     currentUser.imageUrl,
                   );
+                  _commetController.clear();
                 },
                 icon: const Icon(Icons.send_rounded),
               )
