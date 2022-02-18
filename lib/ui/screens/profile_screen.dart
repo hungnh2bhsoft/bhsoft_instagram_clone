@@ -106,8 +106,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     borderColor: kSecondaryColor,
                                     text: "Sign out",
                                     textColor: kprimaryColor,
-                                    function: () async =>
-                                        await AuthMethods().logOut(),
+                                    function: () async {
+                                      log(
+                                          FirebaseAuth.instance.currentUser
+                                              .toString(),
+                                          name: "Before logout");
+                                      await AuthMethods().logOut();
+                                    },
                                   )
                                 : FollowButton(
                                     backgroundColor: isFollowing

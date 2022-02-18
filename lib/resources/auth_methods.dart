@@ -24,7 +24,6 @@ class AuthMethods {
           username.isNotEmpty) {
         final cred = await _auth.createUserWithEmailAndPassword(
             email: email, password: password);
-        log(_auth.currentUser.toString());
         final imageUrl = file == null
             ? "https://viraland.vn/wp-content/themes/Viraland/assets/images/user_dummy.jpg"
             : await StorageMethod().uploadImageToStorage(
@@ -32,16 +31,8 @@ class AuthMethods {
                 file,
                 isPost: false,
               );
-        await _firestore.collection("users").doc(cred.user!.uid).set({
-          "username": username,
-          "email": email,
-          "bio": bio,
-          "followers": [],
-          "following": [],
-          "imageUrl": imageUrl,
-        });
         final user = User(
-          uid: _auth.currentUser!.uid,
+          uid: cred.user!.uid,
           username: username,
           email: email,
           bio: bio,
@@ -49,6 +40,10 @@ class AuthMethods {
           following: [],
           imageUrl: imageUrl,
         );
+        await _firestore
+            .collection("users")
+            .doc(cred.user!.uid)
+            .set(user.toJson());
       }
     } on firebase_auth.FirebaseAuthException catch (e) {
       throw SignUpWithEmailAndPasswordFailure.fromCode(e.code);

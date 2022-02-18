@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:bhsoft_instagram_clone/resources/auth_methods.dart';
+import 'package:bhsoft_instagram_clone/responsive/responsive.dart';
 import 'package:bhsoft_instagram_clone/ui/screens/screens.dart';
 import 'package:bhsoft_instagram_clone/ui/widgets/widgets.dart';
 import 'package:bhsoft_instagram_clone/utils/colors.dart';
@@ -17,6 +18,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -55,9 +57,11 @@ class _LoginScreenState extends State<LoginScreen> {
               GestureDetector(
                 onTap: () => _logIn(context),
                 child: Container(
-                  child: const Text(
-                    'Log in',
-                  ),
+                  child: isLoading
+                      ? const CircularProgressIndicator.adaptive()
+                      : const Text(
+                          'Log in',
+                        ),
                   width: double.infinity,
                   alignment: Alignment.center,
                   padding: const EdgeInsets.symmetric(vertical: 12),
@@ -106,9 +110,23 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _logIn(BuildContext context) async {
     try {
+      setState(() {
+        isLoading = true;
+      });
       await AuthMethods().logIn(
           email: _emailController.text, password: _passwordController.text);
-      log("Logged in");
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (context) => const ResponsiveLayout(
+              mobileScreenLayout: MobileScreenLayout(),
+              webScreenLayout: WebScreenLayout(),
+            ),
+          ),
+          (route) => false);
+
+      setState(() {
+        isLoading = false;
+      });
     } on LogInWithEmailAndPasswordFailure catch (e) {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()

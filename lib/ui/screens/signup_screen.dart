@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:bhsoft_instagram_clone/resources/auth_methods.dart';
+import 'package:bhsoft_instagram_clone/responsive/responsive.dart';
 import 'package:bhsoft_instagram_clone/ui/screens/screens.dart';
 import 'package:bhsoft_instagram_clone/ui/widgets/widgets.dart';
 import 'package:bhsoft_instagram_clone/utils/colors.dart';
@@ -19,7 +20,6 @@ class SignupScreen extends StatefulWidget {
 
 class _SignupScreenState extends State<SignupScreen> {
   Uint8List? _image;
-
   bool isLoading = false;
 
   final TextEditingController _usernameController = TextEditingController();
@@ -35,12 +35,23 @@ class _SignupScreenState extends State<SignupScreen> {
 
   void _signUp(BuildContext context) async {
     try {
+      setState(() {
+        isLoading = true;
+      });
       await AuthMethods().signUpUser(
         email: _emailController.text,
         password: _passwordController.text,
         bio: _bioController.text,
         username: _usernameController.text,
         file: _image,
+      );
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => const ResponsiveLayout(
+            mobileScreenLayout: MobileScreenLayout(),
+            webScreenLayout: WebScreenLayout(),
+          ),
+        ),
       );
     } on SignUpWithEmailAndPasswordFailure catch (e) {
       ScaffoldMessenger.of(context)
@@ -51,6 +62,9 @@ class _SignupScreenState extends State<SignupScreen> {
             content: Text(e.message),
           ),
         );
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -187,7 +201,9 @@ class _SignupScreenState extends State<SignupScreen> {
       onTap: () => _signUp(context),
       child: Container(
         child: isLoading
-            ? const CircularProgressIndicator()
+            ? const CircularProgressIndicator(
+                color: kprimaryColor,
+              )
             : const Text('Sign Up'),
         width: double.infinity,
         alignment: Alignment.center,
