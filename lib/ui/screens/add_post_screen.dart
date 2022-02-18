@@ -17,6 +17,7 @@ class AddPostScreen extends StatefulWidget {
 
 class _AddPostScreenState extends State<AddPostScreen> {
   final _descriptionController = TextEditingController();
+  bool isPosting = false;
   Uint8List? _file;
 
   void _clearPost() {
@@ -27,6 +28,9 @@ class _AddPostScreenState extends State<AddPostScreen> {
 
   void _postImage(String uid, String username, String profImage) async {
     try {
+      setState(() {
+        isPosting = true;
+      });
       await FirestoreMethods().uploadPost(
         _descriptionController.text,
         _file!,
@@ -142,6 +146,9 @@ class _AddPostScreenState extends State<AddPostScreen> {
             ),
             body: Column(
               children: [
+                isPosting
+                    ? const LinearProgressIndicator()
+                    : SizedBox(height: 8),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   crossAxisAlignment: CrossAxisAlignment.start,
