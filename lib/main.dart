@@ -8,6 +8,7 @@ import 'package:bhsoft_instagram_clone/responsive/responsive_layout.dart';
 import 'package:bhsoft_instagram_clone/responsive/web_screen_layout.dart';
 import 'package:bhsoft_instagram_clone/ui/screens/screens.dart';
 import 'package:bhsoft_instagram_clone/utils/colors.dart';
+import 'package:bhsoft_instagram_clone/utils/global_variables.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -38,8 +39,7 @@ class _InstagramAppState extends State<InstagramApp> {
       ],
       child: MaterialApp(
         title: "Instagram Clone",
-        theme: ThemeData.dark()
-            .copyWith(scaffoldBackgroundColor: kMobileBackgroundColor),
+        theme: ThemeData.dark().copyWith(),
         home: StreamBuilder<User?>(
           stream: FirebaseAuth.instance.userChanges(),
           builder: (context, snapshot) {

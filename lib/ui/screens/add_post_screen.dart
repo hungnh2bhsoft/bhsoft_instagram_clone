@@ -11,7 +11,7 @@ class AddPostScreen extends StatelessWidget {
   const AddPostScreen({
     Key? key,
   }) : super(key: key);
-
+  
   void _selectImage(
       BuildContext context, void Function(Uint8List?) onSelected) async {
     return showDialog(

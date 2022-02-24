@@ -21,6 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: Center(
           child: SingleChildScrollView(
         child: Padding(
@@ -67,7 +68,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(4)),
                     ),
-                    color: kBlueColor,
                   ),
                 ),
               ),
@@ -86,15 +86,16 @@ class _LoginScreenState extends State<LoginScreen> {
                       ' Sign Up.',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
+
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
-      )),
+      ),
     );
   }
 
