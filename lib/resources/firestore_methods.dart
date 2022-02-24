@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:bhsoft_instagram_clone/models/models.dart';
 import 'package:bhsoft_instagram_clone/resources/storage_methods.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:uuid/uuid.dart';
 
 class FirestoreMethods {
@@ -35,13 +36,14 @@ class FirestoreMethods {
     }
   }
 
-  Future<void> likePost(List likes, String postId, String uid) async {
-    if (likes.contains(uid)) {
-      await _firestore.collection("posts").doc(postId).update({
+  Future<void> likePost(Post post) async {
+    final uid = firebase_auth.FirebaseAuth.instance.currentUser!.uid;
+    if (post.likes.contains(uid)) {
+      await _firestore.collection("posts").doc(post.postId).update({
         'likes': FieldValue.arrayRemove([uid])
       });
     } else {
-      await _firestore.collection("posts").doc(postId).update({
+      await _firestore.collection("posts").doc(post.postId).update({
         'likes': FieldValue.arrayUnion([uid])
       });
     }
@@ -114,12 +116,11 @@ class FirestoreMethods {
   }
 
   Future<void> deletePost(
-    String uid,
-    String postId,
+    Post post,
   ) async {
     try {
-      log("deleting post: $postId by $uid");
-      await _firestore.collection("posts").doc(postId).delete();
+      log("deleting post: ${post.postId} by ${post.uid}");
+      await _firestore.collection("posts").doc(post.postId).delete();
     } on Exception catch (e) {
       log(e.toString());
     }

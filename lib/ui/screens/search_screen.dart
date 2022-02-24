@@ -1,97 +1,74 @@
 import 'package:bhsoft_instagram_clone/models/models.dart';
-import 'package:bhsoft_instagram_clone/resources/firestore_methods.dart';
+import 'package:bhsoft_instagram_clone/providers/search_provider.dart';
 import 'package:bhsoft_instagram_clone/ui/screens/screens.dart';
 import 'package:bhsoft_instagram_clone/utils/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class SearchScreen extends StatefulWidget {
+class SearchScreen extends StatelessWidget {
   const SearchScreen({Key? key}) : super(key: key);
 
   @override
-  _SearchScreenState createState() => _SearchScreenState();
-}
-
-class _SearchScreenState extends State<SearchScreen> {
-  late TextEditingController _searchController;
-  bool isEmpty = true;
-  @override
-  void initState() {
-    super.initState();
-    _searchController = TextEditingController()
-      ..addListener(() {
-        handleSearch(_searchController.text);
-      });
-  }
-
-  void handleSearch(String value) {
-    if (value.isEmpty) {
-      setState(() {
-        isEmpty = true;
-      });
-    } else {
-      setState(() {
-        isEmpty = false;
-      });
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: kMobileBackgroundColor,
-        title: TextFormField(
-          controller: _searchController,
-          decoration: const InputDecoration(
-            border: InputBorder.none,
-            hintText: "Search for users",
+    return ChangeNotifierProvider(
+      create: (_) => SearchProvider(),
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: kMobileBackgroundColor,
+          title: Consumer<SearchProvider>(
+            builder: (_, searchProvider, __) => TextFormField(
+              onChanged: searchProvider.onValueChanged,
+              decoration: const InputDecoration(
+                border: InputBorder.none,
+                hintText: "Search for users",
+              ),
+            ),
+          ),
+        ),
+        body: Consumer<SearchProvider>(
+          builder: (context, searchProvider, child) => AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            child: searchProvider.isEmpty
+                ? const Center(
+                    child: Icon(
+                    Icons.search_rounded,
+                    size: 40,
+                    color: kSecondaryColor,
+                  ))
+                : searchProvider.isSearching
+                    ? const Center(child: CircularProgressIndicator())
+                    : searchProvider.results.isEmpty
+                        ? const Center(
+                            child: Text(
+                            "No results found",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ))
+                        : ListView.builder(
+                            itemCount: searchProvider.results.length,
+                            itemBuilder: (context, index) => _buildResultTile(
+                                context, searchProvider.results[index]),
+                          ),
           ),
         ),
       ),
-      body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 300),
-        child: isEmpty
-            ? const Center(
-                child: Icon(
-                Icons.search_rounded,
-                size: 40,
-                color: kSecondaryColor,
-              ))
-            : FutureBuilder<List<User>>(
-                future: FirestoreMethods().searchUsers(_searchController.text),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return const Center(
-                      child: CircularProgressIndicator.adaptive(),
-                    );
-                  }
-                  final users = snapshot.data!;
-                  if (users.isEmpty) {
-                    return const Center(
-                      child: Text("No user found"),
-                    );
-                  }
-                  return ListView.builder(
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        onTap: () => Navigator.of(context)
-                            .push(MaterialPageRoute(builder: (_) {
-                          return ProfileScreen(uid: users[index].uid);
-                        })),
-                        leading: CircleAvatar(
-                          backgroundImage: NetworkImage(
-                            users[index].imageUrl,
-                          ),
-                        ),
-                        title: Text(users[index].username),
-                        subtitle: Text(users[index].username),
-                      );
-                    },
-                    itemCount: users.length,
-                  );
-                },
-              ),
+    );
+  }
+
+  ListTile _buildResultTile(BuildContext context, User user) {
+    return ListTile(
+      onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) {
+        return ProfileScreen(uid: user.uid);
+      })),
+      leading: CircleAvatar(
+        backgroundImage: NetworkImage(
+          user.imageUrl,
+        ),
       ),
+      title: Text(user.username),
+      subtitle: Text(user.username),
     );
   }
 }

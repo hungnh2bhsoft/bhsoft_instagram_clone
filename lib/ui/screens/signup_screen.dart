@@ -45,14 +45,6 @@ class _SignupScreenState extends State<SignupScreen> {
         username: _usernameController.text,
         file: _image,
       );
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => const ResponsiveLayout(
-            mobileScreenLayout: MobileScreenLayout(),
-            webScreenLayout: WebScreenLayout(),
-          ),
-        ),
-      );
     } on SignUpWithEmailAndPasswordFailure catch (e) {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
@@ -92,7 +84,7 @@ class _SignupScreenState extends State<SignupScreen> {
               children: [
                 SvgPicture.asset(
                   'assets/ic_instagram.svg',
-                  color: kprimaryColor,
+                  color: kPrimaryColor,
                   height: 64,
                 ),
                 const SizedBox(
@@ -203,7 +195,7 @@ class _SignupScreenState extends State<SignupScreen> {
       child: Container(
         child: isLoading
             ? const CircularProgressIndicator(
-                color: kprimaryColor,
+                color: kPrimaryColor,
               )
             : const Text('Sign Up'),
         width: double.infinity,

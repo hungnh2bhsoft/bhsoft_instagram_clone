@@ -1,19 +1,22 @@
-import 'dart:developer';
-
 import 'package:bhsoft_instagram_clone/models/models.dart';
-import 'package:bhsoft_instagram_clone/resources/firestore_methods.dart';
-import 'package:bhsoft_instagram_clone/ui/screens/comments_screen.dart';
-import 'package:bhsoft_instagram_clone/ui/widgets/like_animation.dart';
+import 'package:bhsoft_instagram_clone/ui/screens/screens.dart';
+import 'package:bhsoft_instagram_clone/ui/widgets/widgets.dart';
 import 'package:bhsoft_instagram_clone/utils/colors.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class PostCard extends StatefulWidget {
-  const PostCard({Key? key, required this.data}) : super(key: key);
+  const PostCard(
+      {Key? key,
+      required this.post,
+      required this.onLiked,
+      required this.onDeleted})
+      : super(key: key);
 
-  final Map<String, dynamic> data;
+  final Post post;
+  final Function(Post) onLiked;
+  final void Function(Post) onDeleted;
 
   @override
   State<PostCard> createState() => _PostCardState();
@@ -22,25 +25,14 @@ class PostCard extends StatefulWidget {
 class _PostCardState extends State<PostCard> {
   bool _isAnimating = false;
 
-  String convertTime(Timestamp timestamp) {
-    final time = widget.data["datePublished"] as Timestamp;
+  String convertTime(DateTime dateTime) {
     final DateFormat dateFormat = DateFormat("dd/MM/yyyy");
-    return dateFormat.format(time.toDate()).toString();
+    return dateFormat.format(dateTime).toString();
   }
 
   bool userLiked(List likes) {
     final uid = FirebaseAuth.instance.currentUser!.uid;
     return likes.contains(uid);
-  }
-
-  Future<ImageProvider> getProfileImage() async {
-    final url =
-        await FirestoreMethods().getUserProfileImage(widget.data["uid"]);
-    if (url.isEmpty) {
-      return const AssetImage("assets/user_dummy.jpeg");
-    } else {
-      return NetworkImage(url);
-    }
   }
 
   @override
@@ -59,18 +51,18 @@ class _PostCardState extends State<PostCard> {
               children: [
                 CircleAvatar(
                   radius: 16,
-                  backgroundImage: NetworkImage(widget.data["profImage"]),
+                  backgroundImage: NetworkImage(widget.post.profImage),
                 ),
                 Expanded(
                   child: Padding(
-                    padding: EdgeInsets.only(left: 8),
+                    padding: const EdgeInsets.only(left: 8),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "${widget.data["username"]}",
-                          style: TextStyle(
+                          widget.post.username,
+                          style: const TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
                         )
@@ -88,16 +80,13 @@ class _PostCardState extends State<PostCard> {
                           child: ListView(
                             shrinkWrap: true,
                             children: [
-                              if (uid == widget.data["uid"])
+                              if (uid == widget.post.uid)
                                 SimpleDialogOption(
                                   padding: const EdgeInsets.symmetric(
                                       vertical: 16.0, horizontal: 12.0),
                                   child: const Text("Delete"),
                                   onPressed: () {
-                                    FirestoreMethods().deletePost(
-                                      widget.data["uid"],
-                                      widget.data["postId"],
-                                    );
+                                    widget.onDeleted(widget.post);
                                     Navigator.of(context).pop();
                                   },
                                 )
@@ -117,7 +106,7 @@ class _PostCardState extends State<PostCard> {
           SizedBox(
             width: double.infinity,
             height: MediaQuery.of(context).size.height / 3,
-            child: Image.network(widget.data["postUrl"] as String),
+            child: Image.network(widget.post.postUrl),
           ),
           Row(
             children: [
@@ -129,7 +118,7 @@ class _PostCardState extends State<PostCard> {
                       _isAnimating = true;
                     });
                   },
-                  icon: Icon(userLiked(widget.data["likes"])
+                  icon: Icon(userLiked(widget.post.likes)
                       ? Icons.favorite
                       : Icons.favorite_border),
                 ),
@@ -137,17 +126,13 @@ class _PostCardState extends State<PostCard> {
                   setState(() {
                     _isAnimating = false;
                   });
-                  await FirestoreMethods().likePost(
-                    widget.data['likes'],
-                    widget.data['postId'],
-                    FirebaseAuth.instance.currentUser!.uid,
-                  );
+                  widget.onLiked(widget.post);
                 },
               ),
               IconButton(
                 onPressed: () {
                   Navigator.of(context).push(MaterialPageRoute(builder: (_) {
-                    return CommentScreen(post: Post.fromJson(widget.data));
+                    return CommentScreen(post: widget.post);
                   }));
                 },
                 icon: const Icon(Icons.comment_outlined),
@@ -161,7 +146,7 @@ class _PostCardState extends State<PostCard> {
               const Spacer(),
               IconButton(
                 onPressed: () {},
-                icon: Icon(Icons.bookmark_outline_rounded),
+                icon: const Icon(Icons.bookmark_outline_rounded),
               ),
             ],
           ),
@@ -175,7 +160,7 @@ class _PostCardState extends State<PostCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "${widget.data["likes"].length} like${widget.data["likes"].length <= 1 ? "" : "s"}",
+                  "${widget.post.likes.length} like${widget.post.likes.length <= 1 ? "" : "s"}",
                   style: Theme.of(context).textTheme.bodyText2,
                   textAlign: TextAlign.start,
                 ),
@@ -186,13 +171,13 @@ class _PostCardState extends State<PostCard> {
                   ),
                   child: RichText(
                     text: TextSpan(
-                      style: const TextStyle(color: kprimaryColor),
+                      style: const TextStyle(color: kPrimaryColor),
                       children: [
                         TextSpan(
-                          text: "${widget.data["username"]} ",
+                          text: widget.post.username,
                           style: Theme.of(context).textTheme.bodyText1,
                         ),
-                        TextSpan(text: " ${widget.data["description"]}"),
+                        TextSpan(text: widget.post.description),
                       ],
                     ),
                   ),
@@ -200,7 +185,7 @@ class _PostCardState extends State<PostCard> {
                 Container(
                   padding: const EdgeInsets.only(top: 4),
                   child: Text(
-                    convertTime(widget.data["datePublished"]),
+                    convertTime(widget.post.datePublished),
                     style: const TextStyle(
                       fontSize: 12,
                       color: kSecondaryColor,
@@ -213,9 +198,9 @@ class _PostCardState extends State<PostCard> {
                   },
                   child: Container(
                     padding: const EdgeInsets.only(top: 4),
-                    child: Text(
+                    child: const Text(
                       "View all comments",
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         color: kBlueColor,
                       ),

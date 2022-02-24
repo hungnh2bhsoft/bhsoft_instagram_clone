@@ -1,61 +1,19 @@
 import 'dart:typed_data';
 
-import 'package:bhsoft_instagram_clone/providers/user_provider.dart';
-import 'package:bhsoft_instagram_clone/resources/firestore_methods.dart';
+import 'package:bhsoft_instagram_clone/providers/providers.dart';
 import 'package:bhsoft_instagram_clone/utils/colors.dart';
 import 'package:bhsoft_instagram_clone/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
-class AddPostScreen extends StatefulWidget {
-  const AddPostScreen({Key? key}) : super(key: key);
-
-  @override
-  _AddPostScreenState createState() => _AddPostScreenState();
-}
-
-class _AddPostScreenState extends State<AddPostScreen> {
-  final _descriptionController = TextEditingController();
-  bool isPosting = false;
-  Uint8List? _file;
-
-  void _clearPost() {
-    setState(() {
-      _file = null;
-    });
-  }
-
-  void _postImage(String uid, String username, String profImage) async {
-    try {
-      setState(() {
-        isPosting = true;
-      });
-      await FirestoreMethods().uploadPost(
-        _descriptionController.text,
-        _file!,
-        uid,
-        username,
-        profImage,
-      );
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          const SnackBar(
-            content: Text('Post added successfully'),
-          ),
-        );
-      _clearPost();
-    } on UploadPostFailure catch (e) {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(content: Text(e.message)),
-        );
-    }
-  }
-
-  void _selectImage() async {
+class AddPostScreen extends StatelessWidget {
+  const AddPostScreen({
+    Key? key,
+  }) : super(key: key);
+  
+  void _selectImage(
+      BuildContext context, void Function(Uint8List?) onSelected) async {
     return showDialog(
       context: context,
       builder: (context) {
@@ -68,9 +26,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
               onPressed: () async {
                 Navigator.of(context).pop();
                 final file = await pickImage(ImageSource.camera);
-                setState(() {
-                  _file = file;
-                });
+                onSelected(file);
               },
             ),
             SimpleDialogOption(
@@ -79,9 +35,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
               onPressed: () async {
                 Navigator.of(context).pop();
                 final file = await pickImage(ImageSource.camera);
-                setState(() {
-                  _file = file;
-                });
+                onSelected(file);
               },
             ),
             SimpleDialogOption(
@@ -98,95 +52,100 @@ class _AddPostScreenState extends State<AddPostScreen> {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<UserProvider>(context, listen: false).user;
-    return _file == null
-        ? Center(
-            child: GestureDetector(
-              onTap: _selectImage,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Icon(Icons.upload),
-                  Text(
-                    "Select an image",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+    return ChangeNotifierProvider(
+      create: (_) => PostProvider(
+        user: Provider.of<UserProvider>(context, listen: false).user!,
+      ),
+      child: Consumer<PostProvider>(
+        builder: (context, postProvider, child) {
+          if (postProvider.file == null) {
+            return Center(
+              child: GestureDetector(
+                onTap: () => _selectImage(
+                  context,
+                  postProvider.onImageSelected,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Icon(Icons.upload),
+                    Text(
+                      "Select an image",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+          return IgnorePointer(
+            ignoring: postProvider.isUploading,
+            child: Scaffold(
+              appBar: AppBar(
+                backgroundColor: kMobileBackgroundColor,
+                title: const Text("Post to"),
+                leading: IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: postProvider.clearPost,
+                ),
+                actions: [
+                  TextButton(
+                    child: const Text(
+                      "Post",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    onPressed: postProvider.uploadPost,
+                  )
+                ],
+              ),
+              body: ListView(
+                children: [
+                  if (postProvider.isUploading) const LinearProgressIndicator(),
+                  Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundImage: NetworkImage(
+                          user!.imageUrl,
+                        ),
+                        radius: 28,
+                      ),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      Expanded(
+                        child: TextField(
+                          maxLines: 3,
+                          onChanged: postProvider.onDescriptionChanged,
+                          decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            hintText: "Write some description",
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  SizedBox(
+                    height: 200,
+                    child: Image.memory(
+                      postProvider.file!,
+                      fit: BoxFit.cover,
                     ),
                   ),
                 ],
               ),
             ),
-          )
-        : Scaffold(
-            appBar: AppBar(
-              backgroundColor: kMobileBackgroundColor,
-              title: const Text("Post to"),
-              leading: IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: _clearPost,
-              ),
-              actions: [
-                TextButton(
-                  child: const Text(
-                    "Post",
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  onPressed: () {
-                    _postImage(
-                      user!.uid,
-                      user.username,
-                      user.imageUrl,
-                    );
-                  },
-                )
-              ],
-            ),
-            body: Column(
-              children: [
-                isPosting
-                    ? const LinearProgressIndicator()
-                    : SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CircleAvatar(
-                      backgroundImage: NetworkImage(user!.imageUrl == ""
-                          ? "https://www.google.com/url?sa=i&url=https%3A%2F%2Fviraland.vn%2Ftuyen-dung%2F&psig=AOvVaw2btNFrk3BJ1wiQvtnT5Ss-&ust=1644979231184000&source=images&cd=vfe&ved=0CAsQjRxqFwoTCMi1wqnXgPYCFQAAAAAdAAAAABAD"
-                          : user.imageUrl),
-                    ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.3,
-                      child: TextField(
-                        controller: _descriptionController,
-                        decoration: const InputDecoration(
-                            hintText: "Write a caption...",
-                            border: InputBorder.none),
-                        maxLines: 8,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 45.0,
-                      width: 45.0,
-                      child: AspectRatio(
-                        aspectRatio: 487 / 451,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: MemoryImage(_file!),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                )
-              ],
-            ),
           );
+        },
+      ),
+    );
   }
 }
