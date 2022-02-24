@@ -57,16 +57,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       appBar: AppBar(
         backgroundColor: kMobileBackgroundColor,
         title: const Text("username"),
-        actions: [
-          IconButton(
-            onPressed: () async {
-              await AuthMethods().logOut();
-            },
-            icon: const Icon(
-              Icons.logout_outlined,
-            ),
-          )
-        ],
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -105,7 +95,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     backgroundColor: kMobileBackgroundColor,
                                     borderColor: kSecondaryColor,
                                     text: "Sign out",
-                                    textColor: kprimaryColor,
+                                    textColor: kPrimaryColor,
                                     function: () async {
                                       log(
                                           FirebaseAuth.instance.currentUser
@@ -120,7 +110,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         : kBlueColor,
                                     borderColor: kSecondaryColor,
                                     text: isFollowing ? "Unfollow" : "Follow",
-                                    textColor: kprimaryColor,
+                                    textColor: kPrimaryColor,
                                     function: () async {
                                       final follow = await FirestoreMethods()
                                           .toggleFollowing(

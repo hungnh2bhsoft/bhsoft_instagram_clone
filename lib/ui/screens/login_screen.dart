@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:bhsoft_instagram_clone/resources/auth_methods.dart';
 import 'package:bhsoft_instagram_clone/responsive/responsive.dart';
 import 'package:bhsoft_instagram_clone/ui/screens/screens.dart';
@@ -31,7 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               SvgPicture.asset(
                 'assets/ic_instagram.svg',
-                color: kprimaryColor,
+                color: kPrimaryColor,
                 height: 64,
               ),
               const SizedBox(
@@ -80,7 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text(
-                    'Dont have an account?',
+                    "Don't have an account?",
                   ),
                   GestureDetector(
                     onTap: () => _showSignupScreen(context),
@@ -115,14 +113,6 @@ class _LoginScreenState extends State<LoginScreen> {
       });
       await AuthMethods().logIn(
           email: _emailController.text, password: _passwordController.text);
-      Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(
-            builder: (context) => const ResponsiveLayout(
-              mobileScreenLayout: MobileScreenLayout(),
-              webScreenLayout: WebScreenLayout(),
-            ),
-          ),
-          (route) => false);
 
       setState(() {
         isLoading = false;
