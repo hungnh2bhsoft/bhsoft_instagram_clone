@@ -40,7 +40,7 @@ class _CommentCardState extends State<CommentCard> {
             backgroundImage: NetworkImage(widget.comment.profileImage),
             radius: 16,
           ),
-          SizedBox(width: 16),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -49,17 +49,17 @@ class _CommentCardState extends State<CommentCard> {
                   text: TextSpan(children: [
                     TextSpan(
                       text: widget.comment.name,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     TextSpan(
                       text: " ${_formatDate(widget.comment.datePublished)}",
-                      style: TextStyle(color: kSecondaryColor),
+                      style: const TextStyle(color: kSecondaryColor),
                     ),
                   ]),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Text(widget.comment.content),
               ],
             ),

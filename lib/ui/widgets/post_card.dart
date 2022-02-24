@@ -105,8 +105,11 @@ class _PostCardState extends State<PostCard> {
           ),
           SizedBox(
             width: double.infinity,
-            height: MediaQuery.of(context).size.height / 3,
-            child: Image.network(widget.post.postUrl),
+            height: 300,
+            child: Image.network(
+              widget.post.postUrl,
+              fit: BoxFit.cover,
+            ),
           ),
           Row(
             children: [
@@ -118,7 +121,7 @@ class _PostCardState extends State<PostCard> {
                       _isAnimating = true;
                     });
                   },
-                  icon: Icon(userLiked(widget.post.likes)
+                  icon: Icon(userLiked(widget.post.likes!)
                       ? Icons.favorite
                       : Icons.favorite_border),
                 ),

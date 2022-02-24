@@ -46,18 +46,18 @@ class _WebScreenLayoutState extends State<WebScreenLayout> {
     final size = MediaQuery.of(context).size;
     final User? user = Provider.of<UserProvider>(context).user;
     return Scaffold(
-        backgroundColor: kwebBackgroundColor,
+        backgroundColor: kWebBackgroundColor,
         appBar: AppBar(
           title: SvgPicture.asset(
             "assets/ic_instagram.svg",
-            color: kprimaryColor,
+            color: kPrimaryColor,
           ),
           actions: icons.map((icon) {
             return IconButton(
               icon: icon,
               color: icons.indexOf(icon) == _currentIndex
                   ? kBlueColor
-                  : kprimaryColor,
+                  : kPrimaryColor,
               onPressed: () {
                 selectPage(icons.indexOf(icon));
               },
@@ -65,7 +65,7 @@ class _WebScreenLayoutState extends State<WebScreenLayout> {
           }).toList(),
         ),
         body: Padding(
-          padding: EdgeInsets.symmetric(horizontal: size.width / 4),
+          padding: EdgeInsets.symmetric(horizontal: size.width / 5),
           child: user == null
               ? const Center(
                   child: CircularProgressIndicator.adaptive(),

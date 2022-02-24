@@ -6,7 +6,7 @@ const kMobileMaxWidth = 600;
 
 final homePageItems = [
   const FeedsScreen(),
-  const SearchScreen(),
+  SearchScreen(),
   const AddPostScreen(),
   const Text("Favorite Scren"),
   ProfileScreen(

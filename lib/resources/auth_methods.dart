@@ -44,6 +44,9 @@ class AuthMethods {
             .collection("users")
             .doc(cred.user!.uid)
             .set(user.toJson());
+      } else {
+        throw const SignUpWithEmailAndPasswordFailure(
+            "Please fill all the fields");
       }
     } on firebase_auth.FirebaseAuthException catch (e) {
       throw SignUpWithEmailAndPasswordFailure.fromCode(e.code);
@@ -55,8 +58,6 @@ class AuthMethods {
     required String password,
   }) async {
     try {
-      final cred = await _auth.signInWithEmailAndPassword(
-          email: email, password: password);
       log(_auth.currentUser.toString());
     } on firebase_auth.FirebaseAuthException catch (err) {
       throw LogInWithEmailAndPasswordFailure.fromCode(err.code);
