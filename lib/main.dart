@@ -2,13 +2,11 @@ import 'dart:developer';
 
 import 'package:bhsoft_instagram_clone/firebase_options.dart';
 import 'package:bhsoft_instagram_clone/providers/providers.dart';
-import 'package:bhsoft_instagram_clone/providers/user_provider.dart';
 import 'package:bhsoft_instagram_clone/responsive/mobile_screen_layout.dart';
 import 'package:bhsoft_instagram_clone/responsive/responsive_layout.dart';
 import 'package:bhsoft_instagram_clone/responsive/web_screen_layout.dart';
 import 'package:bhsoft_instagram_clone/ui/screens/screens.dart';
 import 'package:bhsoft_instagram_clone/utils/colors.dart';
-import 'package:bhsoft_instagram_clone/utils/global_variables.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +18,7 @@ void main() async {
   FirebaseAuth.instance
       .userChanges()
       .listen((user) => log(user.toString(), name: "FirebaseAuth"));
-  runApp(InstagramApp());
+  runApp(const InstagramApp());
 }
 
 class InstagramApp extends StatefulWidget {
@@ -39,7 +37,9 @@ class _InstagramAppState extends State<InstagramApp> {
       ],
       child: MaterialApp(
         title: "Instagram Clone",
-        theme: ThemeData.dark().copyWith(),
+        theme: ThemeData.dark().copyWith(
+          scaffoldBackgroundColor: kMobileBackgroundColor,
+        ),
         home: StreamBuilder<User?>(
           stream: FirebaseAuth.instance.userChanges(),
           builder: (context, snapshot) {
@@ -59,7 +59,7 @@ class _InstagramAppState extends State<InstagramApp> {
                 child: CircularProgressIndicator(),
               );
             }
-            return LoginScreen();
+            return const LoginScreen();
           },
         ),
       ),

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
 class TextFieldInput extends StatelessWidget {
-  final TextEditingController? textEditingController;
+  final void Function(String)? onChanged;
   final bool obscureText;
   final String? hintText;
   final TextInputType? textInputType;
   const TextFieldInput({
     Key? key,
-    this.textEditingController,
+    this.onChanged,
     this.obscureText = false,
     this.hintText,
     this.textInputType,
@@ -20,7 +20,7 @@ class TextFieldInput extends StatelessWidget {
     );
 
     return TextField(
-      controller: textEditingController,
+      onChanged: onChanged,
       decoration: InputDecoration(
         hintText: hintText,
         border: inputBorder,

@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -25,7 +24,7 @@ class StorageMethod {
       final UploadTask uploadTask = ref.putData(file);
       final snap = await uploadTask;
       return await snap.ref.getDownloadURL();
-    } on FirebaseException catch (e) {
+    } on FirebaseException {
       // log(e.message!, name: "Storage");
       return "";
     }

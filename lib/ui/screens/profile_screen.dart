@@ -1,12 +1,12 @@
-import 'dart:developer';
-
+import 'package:bhsoft_instagram_clone/providers/profile_provider.dart';
+import 'package:bhsoft_instagram_clone/providers/user_provider.dart';
 import 'package:bhsoft_instagram_clone/resources/auth_methods.dart';
-import 'package:bhsoft_instagram_clone/resources/firestore_methods.dart';
 import 'package:bhsoft_instagram_clone/ui/widgets/follow_button.dart';
 import 'package:bhsoft_instagram_clone/utils/colors.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:bhsoft_instagram_clone/utils/global_variables.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key, required this.uid}) : super(key: key);
@@ -17,137 +17,105 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  bool isLoading = true;
-  late bool isFollowing = false;
-  late Map<String, dynamic> data;
-  late int followers;
-  late int following;
-  late List<dynamic> posts;
-
-  @override
-  void initState() {
-    super.initState();
-    fetchUserData();
-  }
-
-  void fetchUserData() async {
-    final snapshot = await FirebaseFirestore.instance
-        .collection("users")
-        .doc(widget.uid)
-        .get();
-    final postSnapshot = await FirebaseFirestore.instance
-        .collection("posts")
-        .where("uid", isEqualTo: widget.uid)
-        .get();
-
-    setState(() {
-      data = snapshot.data()!;
-      posts = postSnapshot.docs.map((e) => e.data()).toList();
-      isFollowing = (data["followers"] as List)
-          .contains(FirebaseAuth.instance.currentUser!.uid);
-      followers = data["followers"]?.length ?? 0;
-      following = data["following"]?.length ?? 0;
-      isLoading = false;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: kMobileBackgroundColor,
-        title: const Text("username"),
-      ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : ListView(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    children: [
-                      Column(
+    final size = MediaQuery.of(context).size;
+    return ChangeNotifierProvider(
+      create: (_) =>
+          ProfileProvider(uid: Provider.of<UserProvider>(context).user!.uid)
+            ..fetchUserData(),
+      child: Consumer<ProfileProvider>(
+        builder: (context, profileProvider, _) => profileProvider.isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : Scaffold(
+                backgroundColor:
+                    size.width <= kMobileMaxWidth ? null : kWebBackgroundColor,
+                appBar: AppBar(
+                  title: Text(profileProvider.data!["username"]),
+                ),
+                body: ListView(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Row(
                         children: [
-                          CircleAvatar(
-                            backgroundImage:
-                                NetworkImage(data["imageUrl"] as String),
-                            radius: 40,
+                          Column(
+                            children: [
+                              CircleAvatar(
+                                backgroundImage: NetworkImage(profileProvider
+                                    .data!["imageUrl"] as String),
+                                radius: 40,
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                      const SizedBox(
-                        width: 12,
-                      ),
-                      Expanded(
-                        child: Column(
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          const SizedBox(
+                            width: 12,
+                          ),
+                          Expanded(
+                            child: Column(
                               children: [
-                                buildStatColumn("Followers", followers),
-                                buildStatColumn("Following", following),
-                                buildStatColumn("Posts", posts.length),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    buildStatColumn("Followers",
+                                        profileProvider.followers!.length),
+                                    buildStatColumn("Following",
+                                        profileProvider.following!.length),
+                                    buildStatColumn(
+                                        "Posts", profileProvider.posts!.length),
+                                  ],
+                                ),
+                                widget.uid ==
+                                        FirebaseAuth.instance.currentUser!.uid
+                                    ? FollowButton(
+                                        backgroundColor: kMobileBackgroundColor,
+                                        borderColor: kSecondaryColor,
+                                        text: "Sign out",
+                                        textColor: kPrimaryColor,
+                                        function: AuthMethods().logOut,
+                                      )
+                                    : FollowButton(
+                                        backgroundColor:
+                                            profileProvider.isFollowing
+                                                ? kMobileBackgroundColor
+                                                : kBlueColor,
+                                        borderColor: kSecondaryColor,
+                                        text: profileProvider.isFollowing
+                                            ? "Unfollow"
+                                            : "Follow",
+                                        textColor: kPrimaryColor,
+                                        function: profileProvider.toggleFollow),
                               ],
                             ),
-                            widget.uid == FirebaseAuth.instance.currentUser!.uid
-                                ? FollowButton(
-                                    backgroundColor: kMobileBackgroundColor,
-                                    borderColor: kSecondaryColor,
-                                    text: "Sign out",
-                                    textColor: kPrimaryColor,
-                                    function: () async {
-                                      log(
-                                          FirebaseAuth.instance.currentUser
-                                              .toString(),
-                                          name: "Before logout");
-                                      await AuthMethods().logOut();
-                                    },
-                                  )
-                                : FollowButton(
-                                    backgroundColor: isFollowing
-                                        ? kMobileBackgroundColor
-                                        : kBlueColor,
-                                    borderColor: kSecondaryColor,
-                                    text: isFollowing ? "Unfollow" : "Follow",
-                                    textColor: kPrimaryColor,
-                                    function: () async {
-                                      final follow = await FirestoreMethods()
-                                          .toggleFollowing(
-                                              widget.uid, isFollowing);
-                                      setState(() {
-                                        followers += follow ? 1 : -1;
-                                        isFollowing = follow;
-                                      });
-                                    },
-                                  ),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Text(data["bio"] as String),
-                ),
-                Divider(
-                  color: kSecondaryColor,
-                ),
-                GridView.count(
-                  crossAxisSpacing: 5,
-                  mainAxisSpacing: 5,
-                  crossAxisCount: 4,
-                  shrinkWrap: true,
-                  children: [
-                    ...posts.map((e) => Image.network(
-                          e["postUrl"],
-                          fit: BoxFit.cover,
-                        )),
+                          )
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Text(profileProvider.data!["bio"] as String),
+                    ),
+                    const Divider(
+                      color: kSecondaryColor,
+                    ),
+                    GridView.count(
+                      crossAxisSpacing: 5,
+                      mainAxisSpacing: 5,
+                      crossAxisCount: 4,
+                      shrinkWrap: true,
+                      children: [
+                        ...profileProvider.posts!.map((e) => Image.network(
+                              e["postUrl"],
+                              fit: BoxFit.cover,
+                            )),
+                      ],
+                    )
                   ],
-                )
-              ],
-            ),
+                ),
+              ),
+      ),
     );
   }
 

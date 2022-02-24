@@ -38,7 +38,7 @@ class FirestoreMethods {
 
   Future<void> likePost(Post post) async {
     final uid = firebase_auth.FirebaseAuth.instance.currentUser!.uid;
-    if (post.likes.contains(uid)) {
+    if (post.likes!.contains(uid)) {
       await _firestore.collection("posts").doc(post.postId).update({
         'likes': FieldValue.arrayRemove([uid])
       });

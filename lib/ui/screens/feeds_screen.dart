@@ -1,6 +1,7 @@
 import 'package:bhsoft_instagram_clone/providers/feeds_provider.dart';
 import 'package:bhsoft_instagram_clone/ui/widgets/widgets.dart';
 import 'package:bhsoft_instagram_clone/utils/colors.dart';
+import 'package:bhsoft_instagram_clone/utils/global_variables.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -10,24 +11,29 @@ class FeedsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: kMobileBackgroundColor,
-        title: SvgPicture.asset(
-          "assets/ic_instagram.svg",
-          color: kPrimaryColor,
-          height: 32,
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.messenger_outline_rounded,
-              color: kPrimaryColor,
-            ),
-            onPressed: () {},
-          ),
-        ],
-      ),
+      backgroundColor:
+          size.width <= kMobileMaxWidth ? null : kWebBackgroundColor,
+      appBar: size.width <= kMobileMaxWidth
+          ? AppBar(
+              backgroundColor: kMobileBackgroundColor,
+              title: SvgPicture.asset(
+                "assets/ic_instagram.svg",
+                color: kPrimaryColor,
+                height: 32,
+              ),
+              actions: [
+                IconButton(
+                  icon: const Icon(
+                    Icons.messenger_outline_rounded,
+                    color: kPrimaryColor,
+                  ),
+                  onPressed: () {},
+                ),
+              ],
+            )
+          : null,
       body: Consumer<FeedProvider>(
         builder: (context, value, _) {
           final posts = value.posts;
