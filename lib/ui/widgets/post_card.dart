@@ -177,7 +177,7 @@ class _PostCardState extends State<PostCard> {
                       style: const TextStyle(color: kPrimaryColor),
                       children: [
                         TextSpan(
-                          text: widget.post.username,
+                          text: widget.post.username + " ",
                           style: Theme.of(context).textTheme.bodyText1,
                         ),
                         TextSpan(text: widget.post.description),

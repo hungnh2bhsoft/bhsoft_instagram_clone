@@ -59,6 +59,7 @@ class AuthMethods {
   }) async {
     try {
       log(_auth.currentUser.toString());
+      await _auth.signInWithEmailAndPassword(email: email, password: password);
     } on firebase_auth.FirebaseAuthException catch (err) {
       throw LogInWithEmailAndPasswordFailure.fromCode(err.code);
     }
