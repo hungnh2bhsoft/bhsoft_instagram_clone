@@ -17,7 +17,10 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      return web;
+      throw UnsupportedError(
+        'DefaultFirebaseOptions have not been configured for web - '
+        'you can reconfigure this by running the FlutterFire CLI again.',
+      );
     }
     // ignore: missing_enum_constant_in_switch
     switch (defaultTargetPlatform) {
@@ -38,31 +41,30 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBDML8kbIDe9fWYTm3lYR97c76dzumpW84',
-    appId: '1:352181007736:android:a75ea7ccfe63c30a7cc48d',
-    messagingSenderId: '352181007736',
-    projectId: 'bhsoft-demo-login',
-    storageBucket: 'bhsoft-demo-login.appspot.com',
+    apiKey: 'AIzaSyBpeC2sSBdyMgjP-w2X2W4ZKLnTf496XLk',
+    appId: '1:270082601373:android:f418fe666afa01aef7bf74',
+    messagingSenderId: '270082601373',
+    projectId: 'test-instagram-f97c7',
+    storageBucket: 'test-instagram-f97c7.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCdkmnW8mwy-943wsYNuUzAPzfDMWq8Y2c',
-    appId: '1:352181007736:ios:74e12a2ae4a99b657cc48d',
-    messagingSenderId: '352181007736',
-    projectId: 'bhsoft-demo-login',
-    storageBucket: 'bhsoft-demo-login.appspot.com',
-    androidClientId:
-        '352181007736-fg3h1lo2ijmf7ccemhn7qq07b3fi281u.apps.googleusercontent.com',
+    apiKey: 'AIzaSyAB1cmMO8KnA0dJJ3UEmU3ZkncdNn8Ehi8',
+    appId: '1:270082601373:ios:f869fdfb5bb7ec6ef7bf74',
+    messagingSenderId: '270082601373',
+    projectId: 'test-instagram-f97c7',
+    storageBucket: 'test-instagram-f97c7.appspot.com',
     iosClientId:
-        '352181007736-qa83ua4lljbqclgog0lh4s94gdmpg59p.apps.googleusercontent.com',
-    iosBundleId: 'io.flutter.flutter.app',
+        '270082601373-fjikb002eebak8ggheg5kh4m3500al95.apps.googleusercontent.com',
+    iosBundleId: 'com.example.bhsoftInstagramClone',
   );
 
   static const FirebaseOptions web = FirebaseOptions(
-      apiKey: "AIzaSyBISvsCIQ6eJEPSzfocIZy1vgHG0ZhehAw",
-      authDomain: "bhsoft-demo-login.firebaseapp.com",
-      projectId: "bhsoft-demo-login",
-      storageBucket: "bhsoft-demo-login.appspot.com",
-      messagingSenderId: "352181007736",
-      appId: "1:352181007736:web:67818b80d200e59d7cc48d");
+    apiKey: "AIzaSyCFYrLe8nQwCmWljC9a-GXh0IObNzvh3CA",
+    authDomain: "test-instagram-f97c7.firebaseapp.com",
+    projectId: "test-instagram-f97c7",
+    storageBucket: "test-instagram-f97c7.appspot.com",
+    messagingSenderId: "270082601373",
+    appId: "1:270082601373:web:2dc6f011b49b0b93f7bf74",
+  );
 }
