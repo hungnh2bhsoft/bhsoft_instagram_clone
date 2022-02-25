@@ -2,6 +2,7 @@ import 'package:bhsoft_instagram_clone/providers/providers.dart';
 import 'package:bhsoft_instagram_clone/ui/screens/screens.dart';
 import 'package:bhsoft_instagram_clone/ui/widgets/widgets.dart';
 import 'package:bhsoft_instagram_clone/utils/colors.dart';
+import 'package:bhsoft_instagram_clone/utils/global_variables.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -11,6 +12,7 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return ChangeNotifierProvider(
       create: (_) => LoginProvider(),
       child: Consumer<LoginProvider>(
@@ -20,7 +22,9 @@ class LoginScreen extends StatelessWidget {
             body: Center(
               child: SingleChildScrollView(
                 child: Padding(
-                  padding: const EdgeInsets.all(32),
+                  padding: EdgeInsets.symmetric(
+                      horizontal:
+                          size.width <= kMobileMaxWidth ? 32 : size.width / 3),
                   child: Column(
                     children: [
                       SvgPicture.asset(

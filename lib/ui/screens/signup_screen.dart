@@ -2,6 +2,7 @@ import 'package:bhsoft_instagram_clone/providers/providers.dart';
 import 'package:bhsoft_instagram_clone/ui/screens/screens.dart';
 import 'package:bhsoft_instagram_clone/ui/widgets/widgets.dart';
 import 'package:bhsoft_instagram_clone/utils/colors.dart';
+import 'package:bhsoft_instagram_clone/utils/global_variables.dart';
 import 'package:bhsoft_instagram_clone/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -13,6 +14,7 @@ class SignupScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return ChangeNotifierProvider(
       create: (_) => SignUpProvider(),
       child: Consumer<SignUpProvider>(
@@ -20,7 +22,9 @@ class SignupScreen extends StatelessWidget {
           resizeToAvoidBottomInset: true,
           body: Center(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
+              padding: EdgeInsets.symmetric(
+                  horizontal:
+                      size.width <= kMobileMaxWidth ? 32 : size.width / 3),
               width: double.infinity,
               child: SingleChildScrollView(
                 child: Column(
@@ -159,7 +163,7 @@ class SignupScreen extends StatelessWidget {
                 )
               : const CircleAvatar(
                   radius: 64,
-                  backgroundImage: AssetImage("assets/sample_avatar.jpg"),
+                  backgroundImage: AssetImage("assets/user_dummy.jpeg"),
                   backgroundColor: Colors.red,
                 ),
           Positioned(
